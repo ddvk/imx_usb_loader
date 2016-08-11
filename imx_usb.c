@@ -24,7 +24,6 @@
 
 #include <unistd.h>
 #include <ctype.h>
-#include <sys/io.h>
 #include <errno.h>
 #include <string.h>
 #include <stdlib.h>
@@ -177,7 +176,7 @@ static libusb_device *find_imx_dev(libusb_device **devs, struct mach_id **pp_id,
 		int r = libusb_get_device_descriptor(dev, &desc);
 		if (r < 0) {
 			fprintf(stderr, "failed to get device descriptor");
-			return;
+			return NULL;
 		}
 		p = imx_device(desc.idVendor, desc.idProduct, list);
 		if (p) {
@@ -324,6 +323,7 @@ libusb_device_handle * open_vid_pid(struct mach_id *mach, struct sdp_dev *p_id)
 		printf("claim failed, err=%i\n", err);
 		goto err2;
 	}
+	p_id->priv = h;
 	err = do_status(p_id);
 	if (!err)
 		return h;
